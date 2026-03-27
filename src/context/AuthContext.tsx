@@ -59,10 +59,10 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
 
     const getUserProfile = async (userId: string) => {
         const { data, error } = await supabase
-            .from('profil') // Nom de ta table
-            .select('name, last_name') // La colonne que tu veux
-            .eq('id', userId) // On filtre par l'ID de l'utilisateur connecté
-            .single(); // On ne veut qu'une seule ligne
+            .from('profile')
+            .select('name, last_name')
+            .eq('uid', userId)
+            .single();
 
         if (!error && data) {
             setProfile(data);
