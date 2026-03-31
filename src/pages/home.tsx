@@ -1,63 +1,45 @@
 import {UserAuth} from "../context/AuthContext.tsx";
-import {Link} from "react-router-dom";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 
 export function Home() {
 
-    // const {session, signInUser} = UserAuth();
-    //  console.log(session);
-
     const {session} = UserAuth();
     const navigate = useNavigate();
 
-}
-
-return (
-    <div style={{padding: "20px", textAlign: "center"}}>
-        <h1>Bienvenue sur l'Accueil</h1>
-
-        {session ? (
+    return (
+        <div>
+            <h1>Bienvenue sur l'Accueil</h1>
             <div>
-                <p>Vous êtes connecté avec : <strong>{session.user?.email}</strong></p>
-                {/* Le bouton qui te ramène au Dashboard */}
-                <button
-                    onClick={() => navigate("/dashboard")}
-                    style={{
-                        padding: "10px 20px",
-                        backgroundColor: "#007bff",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                        fontSize: "16px"
-                    }}
-                >
-                    Accéder à mon Dashboard
-                </button>
+                <ul>
+                    <li>
+                        <Link to="/dashboard">dashboard</Link>
+                    </li>
+                    <li>
+                        <Link to="/signup">signup</Link>
+                    </li>
+                    <li>
+                        <Link to="/login">login</Link>
+                    </li>
+                </ul>
             </div>
-        ) : (
             <div>
-                <p>Veuillez vous connecter pour accéder à vos outils.</p>
-                <button onClick={() => navigate("/login")}>
-                    Se connecter
-                </button>
+                {session ? (
+                    <div>
+                        <p>Vous êtes connecté avec : <strong>{session.user?.email}</strong></p>
+                        <button onClick={() => navigate("/dashboard")}>
+                            Accéder à mon Dashboard
+                        </button>
+                    </div>
+                ) : (
+                    <div>
+                        <p>Veuillez vous connecter pour accéder à vos outils.</p>
+                        <button onClick={() => navigate("/login")}>
+                            Se connecter
+                        </button>
+                    </div>
+                )}
             </div>
-        )}
-    </div>
-    <div>
-        <ul>
-            <li>
-                <Link to="/dashboard">Dashboard</Link>
-            </li>
-            <li>
-                <Link to="/signup">Signup</Link>
-            </li>
-            <li>
-                <Link to="/login">Login</Link>
-            </li>
-        </ul>
-    </div>
-)
-;
+        </div>
+    );
 }
