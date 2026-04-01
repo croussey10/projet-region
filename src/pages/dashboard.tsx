@@ -1,5 +1,5 @@
 import {UserAuth} from "../context/AuthContext.tsx";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
 import {getThemeStats, type ThemeStat} from "../services/themeService.tsx";
@@ -80,6 +80,9 @@ export function Dashboard() {
             )}
             <button onClick={() => setRole("Manager")}>Manager</button>
             <button onClick={() => setRole("Agent")}>Agent</button>
+            <Link to="/Questionnaire">Lancer le questionnaire</Link>
+            <button onClick={() => setRole("Manager")} >Manager</button>
+            <button onClick={() => setRole("Agent")} >Agent</button>
             <button onClick={handleSignOut}>Se déconnecter</button>
         </div>
     )
