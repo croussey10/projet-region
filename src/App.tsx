@@ -8,12 +8,13 @@ import PageLuisa from "./pages/PageLuisa.tsx";
 import {PageCharlie} from "./pages/pageCharlie.tsx";
 import Questionnaire from "./pages/Questionnaire.tsx";
 
+
 function App() {
     return (
         <div className="App">
             <BrowserRouter>
                 <Routes>
-                    <Route path="/home" element={<Home/>}/>
+                    <Route path="/" element={<Home/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/signup" element={<Signup/>}/>
                     <Route path="/dashboard" element={<Dashboard/>}/>
