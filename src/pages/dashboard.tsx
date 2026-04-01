@@ -1,5 +1,5 @@
 import {UserAuth} from "../context/AuthContext.tsx";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId} from "../services/profileService.tsx";
 import * as React from "react";
@@ -51,6 +51,7 @@ export function Dashboard() {
             <h1>Dashboard</h1>
             <h2>Bienvenue {session?.user?.email}</h2>
             <p>{profile?.name} {profile?.last_name}</p>
+            <Link to="/Questionnaire">Lancer le questionnaire</Link>
             <button onClick={() => setRole("Manager")} >Manager</button>
             <button onClick={() => setRole("Agent")} >Agent</button>
             <button onClick={handleSignOut}>Se déconnecter</button>
