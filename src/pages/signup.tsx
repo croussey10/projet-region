@@ -201,7 +201,7 @@ export function Signup() {
                     )}
                 </div>
 
-                <Link to="/logintest" style={styles.footerLink}>
+                <Link to="/login" style={styles.footerLink}>
                     Vous avez déjà un compte ? <span style={{ fontWeight: "bold", textDecoration: "underline" }}>Connectez-vous</span>
                 </Link>
             </div>
