@@ -5,19 +5,47 @@ export interface ThemeStat {
     moyenne_points: number;
 }
 
-export const getThemeStats = async (userId: string, order: 'ASC' | 'DESC') => {
-    let query = supabase
+export interface RawThemeData {
+    uid: string;
+    name: string;
+    category: {
+        uid: string;
+        name: string;
+        reponse: {
+            uid: string;
+            reponse_text: string;
+            points: number;
+            target_role: string;
+        }[];
+    }[];
+}
+
+export const getThemeStats = async (userId: string, order: 'ASC' | 'DESC'): Promise<ThemeStat[]> => {
+    const query = supabase
         .from('theme_stats_view')
         .select('theme, moyenne_points')
-        .eq('profile_id', userId);
+        .eq('profile_id', userId)
+        .order('moyenne_points', { ascending: order === 'ASC' })
+        .limit(3);
 
-    query = query.order('moyenne_points', {ascending: order == 'ASC'})
+    const { data, error } = await query;
 
-    const {data, error} = await query.limit(3);
+    if (error) throw error;
+    return (data as unknown as ThemeStat[]) || [];
+};
 
-    if (error) {
-        console.error("Erreur lors de la récupération des pires notes :", error);
-        return [];
-    }
-    return data;
+export const getFullQuestionnaire = async (role: 'manager' | 'agent'): Promise<RawThemeData[]> => {
+    const { data, error } = await supabase
+        .from('theme')
+        .select(`
+            uid, name,
+            category (
+                uid, name,
+                reponse (uid, reponse_text, points, target_role)
+            )
+        `)
+        .eq('category.reponse.target_role', role);
+
+    if (error) throw error;
+    return (data as unknown as RawThemeData[]) || [];
 };

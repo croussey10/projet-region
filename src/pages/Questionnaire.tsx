@@ -1,128 +1,101 @@
-import { useState, useEffect } from "react";
-import { getCategoryWithReponse } from "../services/categoryService.tsx";
+import {useState, useEffect} from "react";
+import {getFullQuestionnaire} from "../services/themeService.tsx";
 
-
-interface ReponseData{
-    uid: string;
-    reponse_text: string;
-    points: number;
-    target_role: string;
+interface Etape {
+    idCategorie: string;
+    nomCategorie: string;
+    nomTheme: string;
+    options: {
+        uid: string;
+        reponse_text: string;
+        points: number;
+    }[];
 }
-
-interface CategoryData {
-    uid: string;
-    name: string;
-    theme: {
-        name: string;
-    } | null;
-    reponse: ReponseData[];
-}
-
 
 export function Questionnaire() {
-    const [listeCategory, setListeCategory] = useState<Array<CategoryData>>([]); // Liste complète de toutes les catégories.
-
-    /// Savoir à quelle catégorie on est. (0)
-
-    const [indexActuelle, setIndexActuelle] = useState(0);
-
-    const [loading, setLoading] = useState(true);
-
-    const [choixUtilisateur, setChoixUtilisateur] = useState<Record<string, string>>({});
+    const [listeEtapes, setListeEtapes] = useState<Etape[]>([]);
+    const [index, setIndex] = useState(0);
+    const [reponsesChoisies, setReponsesChoisies] = useState<Record<string, string>>({});
+    const [chargement, setChargement] = useState(true);
 
     useEffect(() => {
         (async () => {
             try {
-                const data = await getCategoryWithReponse();
-                if (data) {
-                    setListeCategory(data);
-                }
-            } catch (error) {
-                console.error(error);
+                const data = await getFullQuestionnaire('agent');
+
+                const listeReponseTemp: Etape[] = [];
+
+                data.forEach((theme) => {
+                    theme.category.forEach((cat) => {
+                        listeReponseTemp.push({
+                            idCategorie: cat.uid,
+                            nomTheme: theme.name,
+                            nomCategorie: cat.name,
+                            options: cat.reponse
+                        });
+                    });
+                });
+
+                setListeEtapes(listeReponseTemp);
+
+            } catch (err) {
+                console.error(err);
             } finally {
-                setLoading(false);
+                setChargement(false);
             }
         })();
-    },[]);
+    }, []);
 
-    const progression = listeCategory.length > 0
-        ? Math.round((indexActuelle / listeCategory.length) * 100) : 0;
+    if (chargement) return <p>Chargement...</p>;
+    if (listeEtapes.length === 0) return <p>Aucune donnée.</p>;
 
-    const handleSelection = (categoryId: string, reponseId: string) => {
-        setChoixUtilisateur({
-            ...choixUtilisateur,
-            [categoryId]: reponseId
+    const etapeCourante = listeEtapes[index];
+    const dejaRepondu = reponsesChoisies[etapeCourante.idCategorie];
+
+    const selectionner = (idReponse: string) => {
+        setReponsesChoisies({
+            ...reponsesChoisies,
+            [etapeCourante.idCategorie]: idReponse
         });
     };
 
-
-    const faireAvancer = () => {
-        if (indexActuelle < listeCategory.length - 1) {
-            setIndexActuelle(indexActuelle + 1);
-        }
-    };
-
-    const handleVoirResultats = () => {
-        // Pour l'instant on met une alerte, mais on va mettre un navigate("/resultats") pour voir les résultats
-        alert("Redirection vers la page des résultats...");
-    };
-    if (loading) return <p>Chargement du questionnaire...</p>;
-    if (listeCategory.length === 0)
-        return <p>Aucune données trouvées.</p>;
-
-    const donneeActuelle = listeCategory[indexActuelle];
-
-    const reponseSelectionee = choixUtilisateur[donneeActuelle.uid];
-
     return (
         <div>
-            <h1>Évaluation de la maturité de l'équipe</h1>
-            <p>Thématique {indexActuelle + 1}/{listeCategory.length}</p>
-            <p>Page .../30</p>
+            <h1>Questionnaire</h1>
 
-            {/* balise native sans style */}
-            <progress value={progression} max="100"></progress>
-            <p>Progression : {progression}%</p>
-
-            <br />
-            <br />
-
-            <h2>{donneeActuelle.theme?.name || "Thème introuvable"}</h2>
-            <h3>{donneeActuelle.name || "Catégorie introuvable"}</h3>
-            <p>Sélectionnez le niveau qui correspond le mieux à votre pratique actuelle :</p>
-
+            <p>Question {index + 1} / {listeEtapes.length}</p>
+            <progress value={index + 1} max={listeEtapes.length}></progress>
 
             <div>
-                {donneeActuelle.reponse.map((rep) => (
-                    <button key={rep.uid} onClick={() => handleSelection(donneeActuelle.uid, rep.uid)}>
-                        {rep.reponse_text}
-                    </button>
-                ))}
+                <p><strong>Thème :</strong> {etapeCourante.nomTheme}</p>
+                <h2>{etapeCourante.nomCategorie}</h2>
+
+                <div>
+                    {etapeCourante.options.map((opt) => (
+                        <button
+                            key={opt.uid}
+                            onClick={() => selectionner(opt.uid)}
+                            style={{display: 'block', margin: '5px 0'}}
+                        >
+                            {dejaRepondu === opt.uid ? "✅ " : ""}{opt.reponse_text}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            <br />
+            <div>
+                {index < listeEtapes.length - 1 ? (
+                    <button onClick={() => setIndex(index + 1)} disabled={!dejaRepondu}>
+                        Suivant
+                    </button>
+                ) : (
+                    <button onClick={() => alert("Fini !")} disabled={!dejaRepondu}>
+                        Terminer
+                    </button>
+                )}
 
-
-
-            {indexActuelle < listeCategory.length - 1 && (
-                <button onClick={faireAvancer}
-                disabled={!reponseSelectionee}>
-                    Question suivante
-                </button>
-            )}
-
-            {indexActuelle === listeCategory.length - 1 && (
-                <button onClick={handleVoirResultats}
-                disabled={!reponseSelectionee}>
-                    Voir les résultats !
-                </button>
-            )}
-
-            <button onClick={() => setIndexActuelle(0)}>
-                Recommencer.
-            </button>
+                <button onClick={() => setIndex(0)}>Recommencer</button>
+            </div>
         </div>
     );
 }
-
-export default Questionnaire

@@ -6,7 +6,7 @@ import {Signup} from "./pages/signup.tsx";
 import {Dashboard} from "./pages/dashboard.tsx";
 import PageLuisa from "./pages/PageLuisa.tsx";
 import {PageCharlie} from "./pages/pageCharlie.tsx";
-import Questionnaire from "./pages/Questionnaire.tsx";
+import {Questionnaire} from "./pages/Questionnaire.tsx";
 
 
 function App() {
