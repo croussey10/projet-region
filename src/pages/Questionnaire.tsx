@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { getCategoryWithTheme} from "../services/categoryService.tsx";
+import { getCategoryWithReponse } from "../services/categoryService.tsx";
+
 
 interface ReponseData{
     uid: string;
@@ -32,7 +33,7 @@ export function Questionnaire() {
     useEffect(() => {
         (async () => {
             try {
-                const data = await getCategoryWithTheme();
+                const data = await getCategoryWithReponse();
                 if (data) {
                     setListeCategory(data);
                 }
@@ -56,8 +57,8 @@ export function Questionnaire() {
 
 
     const faireAvancer = () => {
-        if (progression < 100) {
-            setProgression(progression + 5);
+        if (indexActuelle < listeCategory.length - 1) {
+            setIndexActuelle(indexActuelle + 1);
         }
     };
 
