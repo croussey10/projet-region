@@ -10,6 +10,7 @@ import {Outlet} from "react-router-dom";
 import {UserAuth} from "./context/AuthContext.tsx";
 import {useState} from "react";
 import Header from '../src/composants/header.tsx';
+import './style/page.css';
 
 
 const LayoutAvecMenu = () => {
@@ -38,7 +39,7 @@ const LayoutAvecMenu = () => {
 
 const HomeWrapper = () => {
 
-    const { session } = UserAuth();
+  const { session } = UserAuth(); 
 
     if (session) {
         return (
@@ -52,7 +53,6 @@ const HomeWrapper = () => {
     }
     return <Home />;
 };
-
 
 function App() {
     const [user] = useState(null);
