@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
 import {getThemeStats, type ThemeStat} from "../services/themeService.tsx";
 import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
+import '../style/side-menu.css';
 import * as React from "react";
 
 export function Dashboard() {

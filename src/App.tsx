@@ -7,20 +7,61 @@ import {Dashboard} from "./pages/dashboard.tsx";
 import PageLuisa from "./pages/PageLuisa.tsx";
 import {PageCharlie} from "./pages/pageCharlie.tsx";
 import Questionnaire from "./pages/Questionnaire.tsx";
+import { PageJojo } from "./pages/pageJojo.tsx";
+import { Menu } from "./composants/Menu.tsx";
+import {Outlet} from "react-router-dom";
+import {UserAuth} from "./context/AuthContext.tsx";
+import {useState} from "react";
 
+
+const LayoutAvecMenu = () => {
+  return (
+    <div className="app-container" style={{ display: 'flex', minHeight: '100vh' }}>
+      <Menu />
+      <main className="main-content" style={{ flexGrow: 1, padding: '20px' }}>
+        <Outlet /> 
+      </main>
+    </div>
+  );
+};
+
+const HomeWrapper = () => {
+
+  const { session } = UserAuth(); 
+
+  if (session) {
+    return (
+      <div className="app-container" style={{ display: 'flex', minHeight: '100vh' }}>
+        <Menu /> 
+        <main className="main-content" style={{ flexGrow: 1, padding: '20px' }}>
+          <Home />
+        </main>
+      </div>
+    );
+  }
+  return <Home />;
+};
 
 function App() {
+
+    const [user] = useState(null); 
+
     return (
         <div className="App">
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Home/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/signup" element={<Signup/>}/>
-                    <Route path="/dashboard" element={<Dashboard/>}/>
-                    <Route path="/PageLuisa" element={<PageLuisa/>}/>
-                    <Route path="/pageCharlie" element={<PageCharlie />}/>
-                    <Route path="/questionnaire" element={<Questionnaire/>}/>
+
+                    <Route path="/" element={<HomeWrapper user={user} />} />
+
+                    <Route element={<LayoutAvecMenu />}>
+                        <Route path="/dashboard" element={<Dashboard/>}/>
+                        <Route path="/PageLuisa" element={<PageLuisa/>}/>
+                        <Route path="/pageCharlie" element={<PageCharlie />}/>
+                        <Route path="/questionnaire" element={<Questionnaire/>}/>
+                        <Route path="/pageJojo" element={<PageJojo />}/>
+                    </Route>
                 </Routes>
             </BrowserRouter>
         </div>
