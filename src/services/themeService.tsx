@@ -2,7 +2,8 @@ import {supabase} from "../supabaseClient.tsx";
 
 export interface ThemeStat {
     theme: string;
-    moyenne_points: number;
+    moyenne_perso: number;
+    moyenne_equipe: number;
 }
 
 export interface RawThemeData {
@@ -20,12 +21,16 @@ export interface RawThemeData {
     }[];
 }
 
+export interface ThemeName {
+    name: string
+}
+
 export const getThemeStats = async (userId: string, order: 'ASC' | 'DESC'): Promise<ThemeStat[]> => {
     const query = supabase
         .from('theme_stats_view')
-        .select('theme, moyenne_points')
+        .select('theme, moyenne_perso')
         .eq('profile_id', userId)
-        .order('moyenne_points', { ascending: order === 'ASC' })
+        .order('moyenne_perso', { ascending: order === 'ASC' })
         .limit(3);
 
     const { data, error } = await query;
@@ -48,4 +53,17 @@ export const getFullQuestionnaire = async (role: 'manager' | 'agent'): Promise<R
 
     if (error) throw error;
     return (data as unknown as RawThemeData[]) || [];
+};
+
+export const getThemeName = async (userId: string) : Promise<ThemeStat[]> => {
+    const query = supabase
+        .from('theme_stats_view')
+        .select('theme, moyenne_perso, moyenne_equipe')
+        .eq('profile_id', userId)
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    console.log(data)
+    return (data as unknown as ThemeStat[]) || [];
 };

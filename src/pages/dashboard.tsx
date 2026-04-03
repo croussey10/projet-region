@@ -2,7 +2,7 @@ import {UserAuth} from "../context/AuthContext.tsx";
 import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
-import {getThemeStats, type ThemeStat} from "../services/themeService.tsx";
+import {getThemeName, getThemeStats, type ThemeName, type ThemeStat} from "../services/themeService.tsx";
 import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import * as React from "react";
@@ -17,6 +17,7 @@ export function Dashboard() {
     const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
     const [role, setRole] = useState<string>("Agent");
     const [loading, setLoading] = useState(true);
+    const [allThemes, setAllThemes] = useState<ThemeStat[]>([]);
 
     console.log(session);
 
@@ -30,14 +31,16 @@ export function Dashboard() {
         (async () => {
             try {
                 setLoading(true);
-                const [profileData, statsData, pointsData] = await Promise.all([
+                const [profileData, statsData, pointsData, themesData] = await Promise.all([
                     getProfileByUserId(session.user.id),
-                    getThemeStats(session.user.id, 'ASC'),
+                    getThemeStats(session.user.id, 'DESC'),
                     getTotalPoints(session.user.id),
+                    getThemeName(session.user.id),
                 ]);
                 setProfile(profileData);
                 setWorstThemes(statsData);
                 setTotalPoints(pointsData);
+                setAllThemes(themesData);
             } catch (err) {
                 console.error("Erreur chargement dashboard:", err);
             } finally {
@@ -46,6 +49,7 @@ export function Dashboard() {
         })();
     }, [session]);
 
+    console.log(allThemes.length);
     console.log(role);
 
     if (session === undefined) {
@@ -73,7 +77,7 @@ export function Dashboard() {
                 <ul>
                     {worstThemes.map((el: any, index: number) => (
                         <li key={index}>
-                            <strong>{el.theme}</strong> : {el.moyenne_points} / 5
+                            <strong>{el.theme}</strong> : {el.moyenne_perso} / 5
                         </li>
                     ))}
                 </ul>
@@ -83,66 +87,22 @@ export function Dashboard() {
 
             <div className="table-container">
                 <ul className="custom-table">
-                    {/* En-tête du tableau */}
                     <li className="custom-table-header">
                         <div className="cellule">Thèmes</div>
                         <div className="cellule">Mes points</div>
                         <div className="cellule">Points de mon équipe</div>
                     </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Capacité d'innovation</div>
-                        <div className="cellule">50</div>
-                        <div className="cellule">20</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Gouvernance</div>
-                        <div className="cellule">30</div>
-                        <div className="cellule">18</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Performance</div>
-                        <div className="cellule">28</div>
-                        <div className="cellule">38</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Communication</div>
-                        <div className="cellule">8</div>
-                        <div className="cellule">11</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Appartenance</div>
-                        <div className="cellule">12</div>
-                        <div className="cellule">22</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Autonomie</div>
-                        <div className="cellule">9</div>
-                        <div className="cellule">12</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Développement des compétences</div>
-                        <div className="cellule">30</div>
-                        <div className="cellule">2</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Collaboration</div>
-                        <div className="cellule">19</div>
-                        <div className="cellule">20</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Adapation aux changements</div>
-                        <div className="cellule">17</div>
-                        <div className="cellule">19</div>
-                    </li>
-                    <li className="Points-Rangée">
-                        <div className="cellule">Motivation</div>
-                        <div className="cellule">40</div>
-                        <div className="cellule">25</div>
-                    </li>
+                    {
+                        allThemes.map((el) => (
+                            <li className="Points-Rangée" key={el.theme}>
+                                <div className="cellule">{el.theme}</div>
+                                <div className="cellule">{el.moyenne_perso}</div>
+                                <div className="cellule">{el.moyenne_equipe}</div>
+                            </li>
+                        ))
+                    }
                 </ul>
             </div>
-
-
 
 
             <button onClick={() => setRole("Manager")}>Manager</button>
