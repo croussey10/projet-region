@@ -2,10 +2,11 @@ import {UserAuth} from "../context/AuthContext.tsx";
 import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
-import {getThemeStats, type ThemeStat} from "../services/themeService.tsx";
+import {getThemeName, getThemeStats, type ThemeName, type ThemeStat} from "../services/themeService.tsx";
 import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import * as React from "react";
+import "../pages/dashboard.css"
 
 export function Dashboard() {
     const {session, signOut} = UserAuth();
@@ -16,6 +17,7 @@ export function Dashboard() {
     const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
     const [role, setRole] = useState<string>("Agent");
     const [loading, setLoading] = useState(true);
+    const [allThemes, setAllThemes] = useState<ThemeStat[]>([]);
 
     console.log(session);
 
@@ -29,14 +31,16 @@ export function Dashboard() {
         (async () => {
             try {
                 setLoading(true);
-                const [profileData, statsData, pointsData] = await Promise.all([
+                const [profileData, statsData, pointsData, themesData] = await Promise.all([
                     getProfileByUserId(session.user.id),
-                    getThemeStats(session.user.id, 'ASC'),
+                    getThemeStats(session.user.id, 'DESC'),
                     getTotalPoints(session.user.id),
+                    getThemeName(session.user.id),
                 ]);
                 setProfile(profileData);
                 setWorstThemes(statsData);
                 setTotalPoints(pointsData);
+                setAllThemes(themesData);
             } catch (err) {
                 console.error("Erreur chargement dashboard:", err);
             } finally {
@@ -45,6 +49,7 @@ export function Dashboard() {
         })();
     }, [session]);
 
+    console.log(allThemes.length);
     console.log(role);
 
     if (session === undefined) {
@@ -72,13 +77,34 @@ export function Dashboard() {
                 <ul>
                     {worstThemes.map((el: any, index: number) => (
                         <li key={index}>
-                            <strong>{el.theme}</strong> : {el.moyenne_points} / 5
+                            <strong>{el.theme}</strong> : {el.moyenne_perso} / 5
                         </li>
                     ))}
                 </ul>
             ) : (
                 <p>Aucune donnée du questionnaire pour le moment.</p>
             )}
+
+            <div className="table-container">
+                <ul className="custom-table">
+                    <li className="custom-table-header">
+                        <div className="cellule">Thèmes</div>
+                        <div className="cellule">Mes points</div>
+                        <div className="cellule">Points de mon équipe</div>
+                    </li>
+                    {
+                        allThemes.map((el) => (
+                            <li className="Points-Rangée" key={el.theme}>
+                                <div className="cellule">{el.theme}</div>
+                                <div className="cellule">{el.moyenne_perso}</div>
+                                <div className="cellule">{el.moyenne_equipe}</div>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
+
+
             <button onClick={() => setRole("Manager")}>Manager</button>
             <button onClick={() => setRole("Agent")}>Agent</button>
             <Link to="/questionnaire">Lancer le questionnaire</Link>

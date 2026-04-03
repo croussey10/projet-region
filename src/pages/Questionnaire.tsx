@@ -16,7 +16,7 @@ export function Questionnaire() {
     const [listeEtapes, setListeEtapes] = useState<Etape[]>([]);
     const [index, setIndex] = useState(0);
     const [reponsesChoisies, setReponsesChoisies] = useState<Record<string, string>>({});
-    const [chargement, setChargement] = useState(true);
+    const [chargement, setchargement] = useState(true);
 
     useEffect(() => {
         (async () => {
@@ -41,7 +41,7 @@ export function Questionnaire() {
             } catch (err) {
                 console.error(err);
             } finally {
-                setChargement(false);
+                setchargement(false);
             }
         })();
     }, []);
@@ -58,6 +58,8 @@ export function Questionnaire() {
             [etapeCourante.idCategorie]: idReponse
         });
     };
+
+    console.log(reponsesChoisies)
 
     return (
         <div className="q-container">
