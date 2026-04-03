@@ -4,10 +4,7 @@ import {Home} from "./pages/home.tsx";
 import {Login} from "./pages/login.tsx";
 import {Signup} from "./pages/signup.tsx";
 import {Dashboard} from "./pages/dashboard.tsx";
-import PageLuisa from "./pages/PageLuisa.tsx";
-import {PageCharlie} from "./pages/pageCharlie.tsx";
-import Questionnaire from "./pages/Questionnaire.tsx";
-import { PageJojo } from "./pages/pageJojo.tsx";
+import {Questionnaire} from "./pages/Questionnaire.tsx";
 import { Menu } from "./composants/Menu.tsx";
 import {Outlet} from "react-router-dom";
 import {UserAuth} from "./context/AuthContext.tsx";
@@ -57,10 +54,7 @@ function App() {
 
                     <Route element={<LayoutAvecMenu />}>
                         <Route path="/dashboard" element={<Dashboard/>}/>
-                        <Route path="/PageLuisa" element={<PageLuisa/>}/>
-                        <Route path="/pageCharlie" element={<PageCharlie />}/>
                         <Route path="/questionnaire" element={<Questionnaire/>}/>
-                        <Route path="/pageJojo" element={<PageJojo />}/>
                     </Route>
                 </Routes>
             </BrowserRouter>

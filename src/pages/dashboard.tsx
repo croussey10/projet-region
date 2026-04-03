@@ -81,9 +81,7 @@ export function Dashboard() {
             )}
             <button onClick={() => setRole("Manager")}>Manager</button>
             <button onClick={() => setRole("Agent")}>Agent</button>
-            <Link to="/Questionnaire">Lancer le questionnaire</Link>
-            <button onClick={() => setRole("Manager")} >Manager</button>
-            <button onClick={() => setRole("Agent")} >Agent</button>
+            <Link to="/questionnaire">Lancer le questionnaire</Link>
             <button onClick={handleSignOut}>Se déconnecter</button>
         </div>
     )
